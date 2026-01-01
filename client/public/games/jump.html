@@ -4,31 +4,35 @@
     <title>Cyber Jump</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        canvas { border: 2px solid #06b6d4; box-shadow: 0 0 15px #06b6d4; }
-        #info { color: #06b6d4; margin-top: 10px; }
+        canvas { border: 2px solid #06b6d4; box-shadow: 0 0 15px #06b6d4; background: #000; }
+        #info { color: #06b6d4; margin-bottom: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div id="info">HIGH SCORE: <span id="high">0</span> | PRESS SPACE TO JUMP</div>
+    <div id="info">HIGH SCORE: <span id="high">0</span> | SPACE TO JUMP</div>
     <canvas id="game" width="400" height="200"></canvas>
     <script>
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
         const highDisplay = document.getElementById('high');
         
-        let highScore = localStorage.getItem('cyber_jump_high') || 0;
+        let highScore = parseInt(localStorage.getItem('cyber_jump_high')) || 0;
         highDisplay.innerText = highScore;
 
         let player = { x: 50, y: 150, w: 20, h: 20, dy: 0, jump: -8, gravity: 0.4, grounded: true };
         let obstacles = [];
         let frame = 0;
         let score = 0;
+        let gameActive = true;
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!gameActive) return;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Ground
             ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, 170);
             ctx.lineTo(400, 170);
@@ -40,8 +44,9 @@
 
             // Obstacles
             ctx.fillStyle = '#ff0055';
-            obstacles.forEach((obs, i) => {
-                obs.x -= 3;
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= 4;
                 ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
                 
                 // Collision
@@ -54,7 +59,9 @@
                     score = 0;
                     obstacles = [];
                 }
-            });
+
+                if (obs.x < -20) obstacles.splice(i, 1);
+            }
 
             // Logic
             player.dy += player.gravity;
@@ -65,7 +72,7 @@
                 player.grounded = true;
             }
 
-            if (frame % 100 === 0) {
+            if (frame % 80 === 0) {
                 obstacles.push({ x: 400, y: 150, w: 20, h: 20 });
             }
 

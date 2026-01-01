@@ -4,10 +4,10 @@
     <title>Neon Clicker</title>
     <style>
         body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #ball { width: 100px; height: 100px; background: #8b5cf6; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #8b5cf6; transition: transform 0.1s; position: absolute; }
-        #ball:active { transform: scale(0.9); }
-        #score { font-size: 2rem; margin-bottom: 20px; font-weight: bold; }
-        #status { font-size: 0.8rem; opacity: 0.5; margin-top: 20px; }
+        #ball { width: 100px; height: 100px; background: #8b5cf6; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #8b5cf6; transition: transform 0.1s; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        #ball:active { transform: translate(-50%, -50%) scale(0.9); }
+        #score { font-size: 2rem; margin-bottom: 20px; font-weight: bold; z-index: 10; position: relative; }
+        #status { font-size: 0.8rem; opacity: 0.5; margin-top: 20px; z-index: 10; position: relative; }
     </style>
 </head>
 <body>
@@ -29,6 +29,7 @@
             const y = Math.random() * (window.innerHeight - 100);
             ball.style.left = x + 'px';
             ball.style.top = y + 'px';
+            ball.style.transform = 'none';
         }
 
         ball.addEventListener('click', () => {

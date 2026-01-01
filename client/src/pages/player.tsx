@@ -80,6 +80,19 @@ export default function Player() {
     toast({ description: "Link copied to clipboard!" });
   };
 
+  const handleFullScreen = () => {
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if ((iframe as any).webkitRequestFullscreen) {
+        (iframe as any).webkitRequestFullscreen();
+      } else if ((iframe as any).msRequestFullscreen) {
+        (iframe as any).msRequestFullscreen();
+      }
+    }
+  };
+
   if (!game) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
 
   return (
@@ -135,7 +148,12 @@ export default function Player() {
           )}
           
           <div className="absolute top-4 right-4 z-40 flex gap-2">
-            <Button variant="secondary" size="icon" className="rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white">
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              onClick={handleFullScreen}
+              className="rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white"
+            >
               <Maximize2 className="w-5 h-5" />
             </Button>
           </div>
