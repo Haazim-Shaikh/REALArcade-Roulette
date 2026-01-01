@@ -19,7 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative flex flex-col font-sans selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground relative flex flex-col font-sans selection:bg-primary selection:text-primary-foreground overflow-x-hidden scale-90 origin-top">
       {/* Scanline effect overlay */}
       <div className="scanline" />
 
