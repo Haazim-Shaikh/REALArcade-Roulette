@@ -7,13 +7,11 @@
         #ball { width: 100px; height: 100px; background: #8b5cf6; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #8b5cf6; transition: transform 0.1s; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
         #ball:active { transform: translate(-50%, -50%) scale(0.9); }
         #score { font-size: 2rem; margin-bottom: 20px; font-weight: bold; z-index: 10; position: relative; }
-        #status { font-size: 0.8rem; opacity: 0.5; margin-top: 20px; z-index: 10; position: relative; }
     </style>
 </head>
 <body>
     <div id="score">SCORE: 0</div>
     <div id="ball"></div>
-    <div id="status">Progress auto-saving to ArcadeRoulette Cloud...</div>
     <script>
         let score = parseInt(localStorage.getItem('neon_clicker_score')) || 0;
         const ball = document.getElementById('ball');

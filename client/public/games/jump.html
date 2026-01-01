@@ -5,15 +5,19 @@
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         canvas { border: 2px solid #06b6d4; box-shadow: 0 0 15px #06b6d4; background: #000; }
-        #info { color: #06b6d4; margin-bottom: 10px; font-size: 16px; }
+        #info { color: #06b6d4; margin-bottom: 10px; font-size: 16px; width: 400px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-    <div id="info">HIGH SCORE: <span id="high">0</span> | SPACE TO JUMP</div>
+    <div id="info">
+        <span>SCORE: <span id="score">0</span></span>
+        <span>HIGH: <span id="high">0</span></span>
+    </div>
     <canvas id="game" width="400" height="200"></canvas>
     <script>
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
         const highDisplay = document.getElementById('high');
         
         let highScore = parseInt(localStorage.getItem('cyber_jump_high')) || 0;
@@ -77,6 +81,7 @@
             }
 
             score++;
+            scoreDisplay.innerText = score;
             frame++;
             requestAnimationFrame(draw);
         }

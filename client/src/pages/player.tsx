@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { MOCK_GAMES, getRandomGame, Game } from "@/lib/games";
@@ -15,10 +15,14 @@ import {
   AlertCircle,
   Play,
   Save,
-  MessageSquare
+  Eye,
+  Calendar,
+  SwitchCamera
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function Player() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +32,15 @@ export default function Player() {
   const [isSaved, setIsSaved] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [isAutosave, setIsAutosave] = useState(true);
+  
+  // Mock metrics
+  const [metrics] = useState({
+    views: Math.floor(Math.random() * 5000) + 1000,
+    likes: Math.floor(Math.random() * 800) + 100,
+    dislikes: Math.floor(Math.random() * 50),
+    postedDate: "Oct 24, 2025"
+  });
 
   useEffect(() => {
     if (id) {
@@ -75,11 +88,6 @@ export default function Player() {
     }, 1000);
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast({ description: "Link copied to clipboard!" });
-  };
-
   const handleFullScreen = () => {
     const iframe = document.querySelector('iframe');
     if (iframe) {
@@ -91,6 +99,11 @@ export default function Player() {
         (iframe as any).msRequestFullscreen();
       }
     }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({ description: "Link copied to clipboard!" });
   };
 
   if (!game) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
@@ -152,11 +165,20 @@ export default function Player() {
               variant="secondary" 
               size="icon" 
               onClick={handleFullScreen}
-              className="rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white"
+              disabled={!isPlaying}
+              className="rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white disabled:opacity-30"
             >
               <Maximize2 className="w-5 h-5" />
             </Button>
           </div>
+
+          {/* Autosave Indicator */}
+          {isPlaying && isAutosave && (
+            <div className="absolute bottom-4 left-4 z-40 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[10px] text-green-400 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              AUTOSAVE ENABLED
+            </div>
+          )}
         </div>
 
         {/* Bottom Bar */}
@@ -168,60 +190,76 @@ export default function Player() {
              </div>
              <div>
                <h2 className="font-bold text-lg md:text-xl text-white leading-tight">{game.title}</h2>
-               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                 <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/20">{game.category[0]}</span>
-                 <span>Demo Mode</span>
+               <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                 <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {metrics.views.toLocaleString()}</span>
+                 <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {metrics.postedDate}</span>
+                 <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/20">by {game.creator}</span>
                </div>
              </div>
           </div>
 
           <div className="flex items-center gap-2 md:gap-6 w-full md:w-auto justify-between md:justify-end">
             
-            <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-white/5">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-green-500/20 hover:text-green-500 h-10 w-10">
-                      <ThumbsUp className="w-5 h-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Like</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            {/* Rating Actions */}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-white/5">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-green-500/20 hover:text-green-500 h-10 w-10">
+                        <ThumbsUp className="w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Like</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
-              <div className="w-px h-6 bg-white/10" />
+                <div className="w-px h-6 bg-white/10" />
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-500/20 hover:text-red-500 h-10 w-10">
-                      <ThumbsDown className="w-5 h-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Dislike</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-500/20 hover:text-red-500 h-10 w-10">
+                        <ThumbsDown className="w-5 h-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Dislike</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex justify-between w-full px-2 mt-1 text-[10px] text-muted-foreground font-bold">
+                <span className="text-green-500">{metrics.likes}</span>
+                <span className="text-red-500">{metrics.dislikes}</span>
+              </div>
             </div>
 
             <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-            <div className="flex items-center gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="secondary" 
-                      onClick={handleManualSave}
-                      className="rounded-full bg-muted hover:bg-muted/80 flex items-center gap-2 px-4"
-                    >
-                      <Save className="w-4 h-4" />
-                      <span className="text-xs font-bold">{saveStatus || "Save Progress"}</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Save your demo progress</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            {/* Save Controls */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center space-x-2 bg-muted/20 px-3 py-1.5 rounded-full border border-white/5">
+                <Switch 
+                  id="autosave" 
+                  checked={isAutosave} 
+                  onCheckedChange={setIsAutosave} 
+                />
+                <Label htmlFor="autosave" className="text-[10px] font-bold text-muted-foreground whitespace-nowrap cursor-pointer">AUTOSAVE</Label>
+              </div>
 
+              {!isAutosave && (
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={handleManualSave}
+                  className="rounded-full bg-muted hover:bg-muted/80 flex items-center gap-2"
+                >
+                  <Save className="w-3 h-3" />
+                  <span className="text-[10px] font-bold">{saveStatus || "SAVE"}</span>
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -251,6 +289,39 @@ export default function Player() {
             </Button>
           </div>
         </div>
+        
+        {/* Game Stats & Leaderboard Mockup */}
+        {game.id === 'jump' && (
+          <div className="container mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 animate-in fade-in slide-in-from-bottom-4">
+            <Card className="bg-card/50 border-white/5 col-span-1 md:col-span-2">
+              <CardHeader><CardTitle className="text-xl">Game Description</CardTitle></CardHeader>
+              <CardContent className="text-muted-foreground text-sm leading-relaxed">
+                {game.description}
+              </CardContent>
+            </Card>
+            <Card className="bg-card/50 border-white/5">
+              <CardHeader><CardTitle className="text-xl flex items-center gap-2"><SwitchCamera className="w-5 h-5 text-primary" /> Top Scorers</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { name: "RetroKing", score: "12,450" },
+                    { name: "PixelMaster", score: "10,890" },
+                    { name: "You", score: localStorage.getItem('cyber_jump_high') || "0", isUser: true },
+                    { name: "VoidRunner", score: "9,200" }
+                  ].sort((a, b) => parseInt(b.score.toString().replace(',','')) - parseInt(a.score.toString().replace(',',''))).map((entry, i) => (
+                    <div key={i} className={`flex justify-between items-center p-2 rounded ${entry.isUser ? 'bg-primary/20 border border-primary/30' : ''}`}>
+                      <span className="text-sm flex items-center gap-2">
+                        <span className="text-muted-foreground w-4">{i + 1}.</span>
+                        {entry.name}
+                      </span>
+                      <span className="font-mono font-bold text-primary">{entry.score}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </Layout>
   );

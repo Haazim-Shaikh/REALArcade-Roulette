@@ -1,9 +1,22 @@
 import { Link, useLocation } from "wouter";
-import { Gamepad2, Heart, Plus, User, Search, Sparkles } from "lucide-react";
+import { Gamepad2, Heart, Plus, User, Search, Sparkles, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const { toast } = useToast();
+  const [isConnected, setIsConnected] = useState(false);
+
+  const handleGithubConnect = () => {
+    setIsConnected(true);
+    toast({
+      title: "Connected to GitHub",
+      description: "You can now sync your repositories in the Creator Portal.",
+      className: "bg-[#24292e] text-white border-none"
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
@@ -41,8 +54,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" className="hidden sm:flex border-primary/50 text-primary hover:bg-primary hover:text-white transition-all shadow-[0_0_10px_rgba(139,92,246,0.2)] hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              Connect with GitHub
+            <Button 
+              variant={isConnected ? "secondary" : "outline"} 
+              size="sm" 
+              onClick={handleGithubConnect}
+              className={`hidden sm:flex items-center gap-2 transition-all ${!isConnected ? 'border-primary/50 text-primary hover:bg-primary hover:text-white' : 'bg-green-500/10 text-green-500 border-green-500/20'}`}
+            >
+              <Github className="w-4 h-4" />
+              {isConnected ? "GitHub Connected" : "Connect GitHub"}
             </Button>
              <Button variant="ghost" size="icon" className="sm:hidden text-muted-foreground">
               <User className="w-5 h-5" />
