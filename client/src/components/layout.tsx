@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Gamepad2, Heart, Plus, User, Search, Sparkles, Github, Users } from "lucide-react";
+import { Gamepad2, Heart, Plus, User, Search, Sparkles, Github, Users, Chrome } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +8,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { toast } = useToast();
   const [isConnected, setIsConnected] = useState(false);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+
+  const handleGoogleConnect = () => {
+    setIsGoogleConnected(!isGoogleConnected);
+    toast({
+      title: isGoogleConnected ? "Google Disconnected" : "Connected to Google",
+      description: isGoogleConnected ? "Your Google account has been unlinked." : "Welcome back! Your preferences are now synced via Google.",
+      className: isGoogleConnected ? "" : "bg-white text-black border-none"
+    });
+  };
 
   const handleGithubConnect = () => {
     setIsConnected(!isConnected);
@@ -57,15 +67,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={isGoogleConnected ? "secondary" : "default"} 
+              size="sm" 
+              onClick={handleGoogleConnect}
+              className={`hidden sm:flex items-center gap-2 transition-all ${!isGoogleConnected ? 'bg-white text-black hover:bg-white/90' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}
+            >
+              <Chrome className="w-4 h-4" />
+              {isGoogleConnected ? "Connected" : "Google Login"}
+            </Button>
             <Button 
               variant={isConnected ? "secondary" : "outline"} 
-              size="sm" 
+              size="icon" 
               onClick={handleGithubConnect}
-              className={`hidden sm:flex items-center gap-2 transition-all ${!isConnected ? 'border-primary/50 text-primary hover:bg-primary hover:text-white' : 'bg-green-500/10 text-green-500 border-green-500/20'}`}
+              className={`hidden sm:flex items-center justify-center transition-all h-9 w-9 ${!isConnected ? 'border-white/10 text-muted-foreground hover:text-white' : 'bg-green-500/10 text-green-500 border-green-500/20'}`}
+              title={isConnected ? "GitHub Connected" : "Connect GitHub"}
             >
               <Github className="w-4 h-4" />
-              {isConnected ? "Connected" : "Connect GitHub"}
             </Button>
              <Button variant="ghost" size="icon" className="sm:hidden text-muted-foreground">
               <User className="w-5 h-5" />
