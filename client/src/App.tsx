@@ -9,6 +9,7 @@ import Player from "@/pages/player";
 import Library from "@/pages/library";
 import Submit from "@/pages/submit";
 import Recommend from "@/pages/recommend";
+import Community from "@/pages/community";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/library" component={Library} />
       <Route path="/submit" component={Submit} />
       <Route path="/recommend" component={Recommend} />
+      <Route path="/community" component={Community} />
       <Route component={NotFound} />
     </Switch>
   );

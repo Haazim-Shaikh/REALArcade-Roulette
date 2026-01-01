@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Gamepad2, Heart, Plus, User, Search, Sparkles, Github } from "lucide-react";
+import { Gamepad2, Heart, Plus, User, Search, Sparkles, Github, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +50,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/submit" className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-2 ${location === '/submit' ? 'text-primary' : 'text-muted-foreground'}`}>
               <Plus className="w-4 h-4" />
               Creator Portal
+            </Link>
+            <Link href="/community" className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-2 ${location === '/community' ? 'text-primary' : 'text-muted-foreground'}`}>
+              <Users className="w-4 h-4" />
+              Community
             </Link>
           </nav>
 
