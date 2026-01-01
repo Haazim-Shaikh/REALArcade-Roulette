@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Jump</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { border: 2px solid #06b6d4; box-shadow: 0 0 15px #06b6d4; }
+        #info { color: #06b6d4; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="info">HIGH SCORE: <span id="high">0</span> | PRESS SPACE TO JUMP</div>
+    <canvas id="game" width="400" height="200"></canvas>
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        const highDisplay = document.getElementById('high');
+        
+        let highScore = localStorage.getItem('cyber_jump_high') || 0;
+        highDisplay.innerText = highScore;
+
+        let player = { x: 50, y: 150, w: 20, h: 20, dy: 0, jump: -8, gravity: 0.4, grounded: true };
+        let obstacles = [];
+        let frame = 0;
+        let score = 0;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Ground
+            ctx.strokeStyle = '#06b6d4';
+            ctx.beginPath();
+            ctx.moveTo(0, 170);
+            ctx.lineTo(400, 170);
+            ctx.stroke();
+
+            // Player
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Obstacles
+            ctx.fillStyle = '#ff0055';
+            obstacles.forEach((obs, i) => {
+                obs.x -= 3;
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                
+                // Collision
+                if (player.x < obs.x + obs.w && player.x + player.w > obs.x && player.y < obs.y + obs.h && player.y + player.h > obs.y) {
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('cyber_jump_high', highScore);
+                        highDisplay.innerText = highScore;
+                    }
+                    score = 0;
+                    obstacles = [];
+                }
+            });
+
+            // Logic
+            player.dy += player.gravity;
+            player.y += player.dy;
+            if (player.y > 150) {
+                player.y = 150;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            if (frame % 100 === 0) {
+                obstacles.push({ x: 400, y: 150, w: 20, h: 20 });
+            }
+
+            score++;
+            frame++;
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && player.grounded) {
+                player.dy = player.jump;
+                player.grounded = false;
+            }
+        });
+
+        draw();
+    </script>
+</body>
+</html>

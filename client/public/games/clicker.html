@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neon Clicker</title>
+    <style>
+        body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        #ball { width: 100px; height: 100px; background: #8b5cf6; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #8b5cf6; transition: transform 0.1s; position: absolute; }
+        #ball:active { transform: scale(0.9); }
+        #score { font-size: 2rem; margin-bottom: 20px; font-weight: bold; }
+        #status { font-size: 0.8rem; opacity: 0.5; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="score">SCORE: 0</div>
+    <div id="ball"></div>
+    <div id="status">Progress auto-saving to ArcadeRoulette Cloud...</div>
+    <script>
+        let score = parseInt(localStorage.getItem('neon_clicker_score')) || 0;
+        const ball = document.getElementById('ball');
+        const scoreDisplay = document.getElementById('score');
+        
+        function updateScore() {
+            scoreDisplay.innerText = `SCORE: ${score}`;
+            localStorage.setItem('neon_clicker_score', score);
+        }
+
+        function moveBall() {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            ball.style.left = x + 'px';
+            ball.style.top = y + 'px';
+        }
+
+        ball.addEventListener('click', () => {
+            score++;
+            updateScore();
+            moveBall();
+        });
+
+        updateScore();
+        moveBall();
+    </script>
+</body>
+</html>
