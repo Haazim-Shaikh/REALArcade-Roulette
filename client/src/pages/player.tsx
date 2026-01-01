@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { Layout } from "@/components/layout";
 import { MOCK_GAMES, getRandomGame, Game } from "@/lib/games";
@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Player() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,9 @@ export default function Player() {
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [isAutosave, setIsAutosave] = useState(true);
   
+  // Skill games don't save
+  const isSkillGame = game?.id === 'clicker' || game?.id === 'jump';
+
   // Mock metrics
   const [metrics] = useState({
     views: Math.floor(Math.random() * 5000) + 1000,
@@ -80,6 +84,10 @@ export default function Player() {
   };
 
   const handleManualSave = () => {
+    if (isSkillGame) {
+      toast({ description: "Skill-based games don't support progress saving.", variant: "destructive" });
+      return;
+    }
     setSaveStatus("Saving...");
     setTimeout(() => {
       setSaveStatus("Progress Saved!");
@@ -106,7 +114,7 @@ export default function Player() {
     toast({ description: "Link copied to clipboard!" });
   };
 
-  if (!game) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+  if (!game) return <div className="min-h-screen bg-background flex items-center justify-center text-white">Loading...</div>;
 
   return (
     <Layout>
@@ -173,7 +181,7 @@ export default function Player() {
           </div>
 
           {/* Autosave Indicator */}
-          {isPlaying && isAutosave && (
+          {isPlaying && isAutosave && !isSkillGame && (
             <div className="absolute bottom-4 left-4 z-40 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[10px] text-green-400 flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               AUTOSAVE ENABLED
@@ -235,29 +243,31 @@ export default function Player() {
 
             <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-            {/* Save Controls */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center space-x-2 bg-muted/20 px-3 py-1.5 rounded-full border border-white/5">
-                <Switch 
-                  id="autosave" 
-                  checked={isAutosave} 
-                  onCheckedChange={setIsAutosave} 
-                />
-                <Label htmlFor="autosave" className="text-[10px] font-bold text-muted-foreground whitespace-nowrap cursor-pointer">AUTOSAVE</Label>
-              </div>
+            {/* Save Controls - Hidden for skill games */}
+            {!isSkillGame && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2 bg-muted/20 px-3 py-1.5 rounded-full border border-white/5">
+                  <Switch 
+                    id="autosave" 
+                    checked={isAutosave} 
+                    onCheckedChange={setIsAutosave} 
+                  />
+                  <Label htmlFor="autosave" className="text-[10px] font-bold text-muted-foreground whitespace-nowrap cursor-pointer">AUTOSAVE</Label>
+                </div>
 
-              {!isAutosave && (
-                <Button 
-                  variant="secondary" 
-                  size="sm"
-                  onClick={handleManualSave}
-                  className="rounded-full bg-muted hover:bg-muted/80 flex items-center gap-2"
-                >
-                  <Save className="w-3 h-3" />
-                  <span className="text-[10px] font-bold">{saveStatus || "SAVE"}</span>
-                </Button>
-              )}
-            </div>
+                {!isAutosave && (
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    onClick={handleManualSave}
+                    className="rounded-full bg-muted hover:bg-muted/80 flex items-center gap-2"
+                  >
+                    <Save className="w-3 h-3" />
+                    <span className="text-[10px] font-bold">{saveStatus || "SAVE"}</span>
+                  </Button>
+                )}
+              </div>
+            )}
 
             <div className="flex items-center gap-2">
               <TooltipProvider>
@@ -290,26 +300,33 @@ export default function Player() {
           </div>
         </div>
         
-        {/* Game Stats & Leaderboard Mockup */}
-        {game.id === 'jump' && (
-          <div className="container mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 animate-in fade-in slide-in-from-bottom-4">
-            <Card className="bg-card/50 border-white/5 col-span-1 md:col-span-2">
-              <CardHeader><CardTitle className="text-xl">Game Description</CardTitle></CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-relaxed">
+        {/* Game Stats & Info */}
+        <div className="container mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 animate-in fade-in slide-in-from-bottom-4">
+          <Card className="bg-card/50 border-white/5 col-span-1 md:col-span-2">
+            <CardHeader><CardTitle className="text-xl">Developer Description</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-primary uppercase tracking-tighter bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                  Genre: {game.category.join(", ")}
+                </span>
+              </div>
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 {game.description}
-              </CardContent>
-            </Card>
+              </p>
+            </CardContent>
+          </Card>
+          
+          {game.id === 'jump' && (
             <Card className="bg-card/50 border-white/5">
-              <CardHeader><CardTitle className="text-xl flex items-center gap-2"><SwitchCamera className="w-5 h-5 text-primary" /> Top Scorers</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-xl flex items-center gap-2"><SwitchCamera className="w-5 h-5 text-primary" /> Global Leaderboard</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {[
                     { name: "RetroKing", score: "12,450" },
                     { name: "PixelMaster", score: "10,890" },
-                    { name: "You", score: localStorage.getItem('cyber_jump_high') || "0", isUser: true },
                     { name: "VoidRunner", score: "9,200" }
-                  ].sort((a, b) => parseInt(b.score.toString().replace(',','')) - parseInt(a.score.toString().replace(',',''))).map((entry, i) => (
-                    <div key={i} className={`flex justify-between items-center p-2 rounded ${entry.isUser ? 'bg-primary/20 border border-primary/30' : ''}`}>
+                  ].map((entry, i) => (
+                    <div key={i} className="flex justify-between items-center p-2 rounded hover:bg-white/5 transition-colors">
                       <span className="text-sm flex items-center gap-2">
                         <span className="text-muted-foreground w-4">{i + 1}.</span>
                         {entry.name}
@@ -320,8 +337,8 @@ export default function Player() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Layout>
   );

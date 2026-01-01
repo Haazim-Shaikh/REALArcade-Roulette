@@ -20,7 +20,7 @@
         const scoreDisplay = document.getElementById('score');
         const highDisplay = document.getElementById('high');
         
-        let highScore = parseInt(localStorage.getItem('cyber_jump_high')) || 0;
+        let highScore = 0;
         highDisplay.innerText = highScore;
 
         let player = { x: 50, y: 150, w: 20, h: 20, dy: 0, jump: -8, gravity: 0.4, grounded: true };
@@ -57,7 +57,6 @@
                 if (player.x < obs.x + obs.w && player.x + player.w > obs.x && player.y < obs.y + obs.h && player.y + player.h > obs.y) {
                     if (score > highScore) {
                         highScore = score;
-                        localStorage.setItem('cyber_jump_high', highScore);
                         highDisplay.innerText = highScore;
                     }
                     score = 0;

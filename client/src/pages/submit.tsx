@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UploadCloud, Github, Globe, Save } from "lucide-react";
+import { UploadCloud, Github, Globe, Save, Tag } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,14 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
   creator: z.string().min(2, "Creator name must be at least 2 characters."),
+  genre: z.string().min(1, "Please select a genre."),
   url: z.string().url("Please enter a valid URL."),
   githubUrl: z.string().url("Please enter a valid GitHub URL.").optional().or(z.literal("")),
-  description: z.string().min(10, "Description must be at least 10 characters."),
+  description: z.string().min(10, "Please provide a detailed description of your game."),
 });
+
+const GENRES = ["Action", "Adventure", "Puzzle", "Platformer", "RPG", "Strategy", "Rhythm", "Racing", "Shooter"];
 
 export default function Submit() {
   const { toast } = useToast();
@@ -33,6 +37,7 @@ export default function Submit() {
     defaultValues: {
       title: "",
       creator: "",
+      genre: "",
       url: "",
       githubUrl: "",
       description: "",
@@ -42,7 +47,7 @@ export default function Submit() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     toast({
       title: "Demo Published!",
-      description: "Your game demo is now live and supporting progress saves.",
+      description: "Your game demo is now live for testing.",
       className: "bg-primary text-white border-none",
     });
     form.reset();
@@ -60,7 +65,7 @@ export default function Submit() {
             </div>
             <CardTitle className="text-3xl font-display font-bold">Creator Demo Portal</CardTitle>
             <CardDescription>
-              Launch a playable demo of your game with progress saving enabled.
+              Submit your game demo and let players test your creation.
             </CardDescription>
           </CardHeader>
 
@@ -84,18 +89,41 @@ export default function Submit() {
                   />
                   <FormField
                     control={form.control}
-                    name="creator"
+                    name="genre"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Developer/Studio</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Indie Studio" {...field} className="bg-muted/50 border-white/10" />
-                        </FormControl>
+                        <FormLabel>Game Genre</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-muted/50 border-white/10">
+                              <SelectValue placeholder="Select a genre" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                            {GENRES.map(genre => (
+                              <SelectItem key={genre} value={genre.toLowerCase()}>{genre}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="creator"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Developer / Studio Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Indie Studio" {...field} className="bg-muted/50 border-white/10" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="space-y-4">
                   <FormField
@@ -104,7 +132,7 @@ export default function Submit() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <Globe className="w-4 h-4" /> Game URL
+                          <Globe className="w-4 h-4" /> Build URL
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="https://..." {...field} className="bg-muted/50 border-white/10" />
@@ -125,7 +153,6 @@ export default function Submit() {
                         <FormControl>
                           <Input placeholder="https://github.com/..." {...field} className="bg-muted/50 border-white/10" />
                         </FormControl>
-                        <FormDescription>Attach your source for easier verification.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -137,25 +164,19 @@ export default function Submit() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Demo Highlights</FormLabel>
+                      <FormLabel>Detailed Description</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="What can players do in this demo?" 
-                          className="min-h-[120px] bg-muted/50 border-white/10" 
+                          placeholder="Write exactly what your game is about, the mechanics, and what players should look for in this demo..." 
+                          className="min-h-[150px] bg-muted/50 border-white/10" 
                           {...field} 
                         />
                       </FormControl>
+                      <FormDescription>Explain the core loop and demo scope.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <div className="flex items-center gap-2 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <Save className="w-5 h-5 text-primary" />
-                  <p className="text-xs text-primary font-medium">
-                    Auto-Save Integration Enabled: Players will be able to save their progress in this demo.
-                  </p>
-                </div>
 
                 <Button type="submit" className="w-full h-12 text-lg font-bold bg-white text-black hover:bg-primary hover:text-white transition-all">
                   Launch Demo

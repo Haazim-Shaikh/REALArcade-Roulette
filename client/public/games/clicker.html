@@ -13,13 +13,12 @@
     <div id="score">SCORE: 0</div>
     <div id="ball"></div>
     <script>
-        let score = parseInt(localStorage.getItem('neon_clicker_score')) || 0;
+        let score = 0;
         const ball = document.getElementById('ball');
         const scoreDisplay = document.getElementById('score');
         
         function updateScore() {
             scoreDisplay.innerText = `SCORE: ${score}`;
-            localStorage.setItem('neon_clicker_score', score);
         }
 
         function moveBall() {
