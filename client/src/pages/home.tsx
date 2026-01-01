@@ -68,14 +68,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000')] bg-cover bg-center opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         
-        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center justify-center text-center space-y-8">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center justify-center text-center space-y-8 w-full">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold animate-in fade-in slide-in-from-top-4 duration-1000">
             <Sparkles className="w-4 h-4" />
             DISCOVER THE NEXT BIG HIT
           </div>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white font-display uppercase leading-none italic animate-in zoom-in duration-700 max-w-4xl mx-auto">
-            Arcade<span className="text-primary not-italic">Roulette</span>
-          </h1>
+          <div className="w-full flex justify-center">
+            <h1 className="text-6xl md:text-8xl font-black tracking-tight text-white font-display uppercase leading-none animate-in zoom-in duration-700 max-w-5xl mx-auto block">
+              Arcade<span className="text-primary">Roulette</span>
+            </h1>
+          </div>
           <p className="max-w-2xl mx-auto text-muted-foreground text-lg md:text-xl font-medium">
             The ultimate launchpad for indie game demos. Play, test, and influence the future of gaming.
           </p>
