@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Gamepad2, Heart, Plus, User, Search } from "lucide-react";
+import { Gamepad2, Heart, Plus, User, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -26,22 +26,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
+            <Link href="/recommend" className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-2 ${location === '/recommend' ? 'text-primary' : 'text-muted-foreground'}`}>
+              <Sparkles className="w-4 h-4" />
+              AI Recommender
+            </Link>
             <Link href="/library" className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-2 ${location === '/library' ? 'text-primary' : 'text-muted-foreground'}`}>
               <Heart className="w-4 h-4" />
-              Library
+              Wishlist
             </Link>
             <Link href="/submit" className={`text-sm font-medium hover:text-primary transition-colors flex items-center gap-2 ${location === '/submit' ? 'text-primary' : 'text-muted-foreground'}`}>
               <Plus className="w-4 h-4" />
-              Submit Game
+              Creator Portal
             </Link>
           </nav>
 
           <div className="flex items-center gap-4">
-             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-              <Search className="w-5 h-5" />
-            </Button>
             <Button variant="outline" size="sm" className="hidden sm:flex border-primary/50 text-primary hover:bg-primary hover:text-white transition-all shadow-[0_0_10px_rgba(139,92,246,0.2)] hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              Login
+              Connect with GitHub
             </Button>
              <Button variant="ghost" size="icon" className="sm:hidden text-muted-foreground">
               <User className="w-5 h-5" />
@@ -58,8 +59,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Footer */}
       <footer className="border-t border-white/5 bg-black/40 py-8 mt-auto relative z-10">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p className="font-display mb-2">BUILT FOR GAMERS</p>
-          <p>© 2024 ArcadeRoulette. All rights reserved.</p>
+          <p className="font-display mb-2">BUILT FOR GAMERS & CREATORS</p>
+          <p>© 2024 ArcadeRoulette. Powered by AI Demos.</p>
         </div>
       </footer>
     </div>

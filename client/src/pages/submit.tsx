@@ -2,9 +2,8 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UploadCloud, CheckCircle2 } from "lucide-react";
+import { UploadCloud, Github, Globe, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,6 +22,7 @@ const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
   creator: z.string().min(2, "Creator name must be at least 2 characters."),
   url: z.string().url("Please enter a valid URL."),
+  githubUrl: z.string().url("Please enter a valid GitHub URL.").optional().or(z.literal("")),
   description: z.string().min(10, "Description must be at least 10 characters."),
 });
 
@@ -34,17 +34,16 @@ export default function Submit() {
       title: "",
       creator: "",
       url: "",
+      githubUrl: "",
       description: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would send to backend
-    console.log(values);
     toast({
-      title: "Game Submitted!",
-      description: "Thanks for submitting. Your game is now in the review queue.",
-      className: "bg-green-600 text-white border-none",
+      title: "Demo Published!",
+      description: "Your game demo is now live and supporting progress saves.",
+      className: "bg-primary text-white border-none",
     });
     form.reset();
   }
@@ -56,12 +55,12 @@ export default function Submit() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary" />
           
           <CardHeader className="text-center pb-8">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20">
               <UploadCloud className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-3xl font-display font-bold">Submit a Game</CardTitle>
+            <CardTitle className="text-3xl font-display font-bold">Creator Demo Portal</CardTitle>
             <CardDescription>
-              Are you a developer? Share your creation with the world.
+              Launch a playable demo of your game with progress saving enabled.
             </CardDescription>
           </CardHeader>
 
@@ -75,9 +74,9 @@ export default function Submit() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Game Title</FormLabel>
+                        <FormLabel>Demo Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Neon Racer" {...field} className="bg-muted/50 border-white/10 focus:border-primary/50" />
+                          <Input placeholder="Cyber Quest" {...field} className="bg-muted/50 border-white/10" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -88,10 +87,45 @@ export default function Submit() {
                     name="creator"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Creator Name</FormLabel>
+                        <FormLabel>Developer/Studio</FormLabel>
                         <FormControl>
-                          <Input placeholder="Studio X" {...field} className="bg-muted/50 border-white/10 focus:border-primary/50" />
+                          <Input placeholder="Indie Studio" {...field} className="bg-muted/50 border-white/10" />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Globe className="w-4 h-4" /> Game URL
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://..." {...field} className="bg-muted/50 border-white/10" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="githubUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Github className="w-4 h-4" /> GitHub Repository (Optional)
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://github.com/..." {...field} className="bg-muted/50 border-white/10" />
+                        </FormControl>
+                        <FormDescription>Attach your source for easier verification.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -100,29 +134,14 @@ export default function Submit() {
 
                 <FormField
                   control={form.control}
-                  name="url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Game URL (Embeddable)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://itch.io/embed/..." {...field} className="bg-muted/50 border-white/10 focus:border-primary/50" />
-                      </FormControl>
-                      <FormDescription>Must be a direct link to the HTML5 game or embed URL.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>Demo Highlights</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Tell us about the gameplay..." 
-                          className="min-h-[120px] bg-muted/50 border-white/10 focus:border-primary/50" 
+                          placeholder="What can players do in this demo?" 
+                          className="min-h-[120px] bg-muted/50 border-white/10" 
                           {...field} 
                         />
                       </FormControl>
@@ -131,8 +150,15 @@ export default function Submit() {
                   )}
                 />
 
+                <div className="flex items-center gap-2 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <Save className="w-5 h-5 text-primary" />
+                  <p className="text-xs text-primary font-medium">
+                    Auto-Save Integration Enabled: Players will be able to save their progress in this demo.
+                  </p>
+                </div>
+
                 <Button type="submit" className="w-full h-12 text-lg font-bold bg-white text-black hover:bg-primary hover:text-white transition-all">
-                  Submit Game
+                  Launch Demo
                 </Button>
               </form>
             </Form>

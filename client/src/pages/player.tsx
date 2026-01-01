@@ -13,7 +13,9 @@ import {
   ThumbsDown, 
   Maximize2,
   AlertCircle,
-  Play
+  Play,
+  Save,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +27,7 @@ export default function Player() {
   const [game, setGame] = useState<Game | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -32,14 +35,12 @@ export default function Player() {
       if (found) {
         setGame(found);
         setIsSaved(isGameSaved(found.id));
-        setIsPlaying(false); // Reset play state on new game
+        setIsPlaying(false);
       } else {
-        // Game not found, redirect random? Or 404. Let's redirect random.
         const random = getRandomGame();
         setLocation(`/play/${random.id}`);
       }
     } else {
-      // No ID provided
       const random = getRandomGame();
       setLocation(`/play/${random.id}`);
     }
@@ -65,6 +66,15 @@ export default function Player() {
     }
   };
 
+  const handleManualSave = () => {
+    setSaveStatus("Saving...");
+    setTimeout(() => {
+      setSaveStatus("Progress Saved!");
+      toast({ description: "Game progress saved locally" });
+      setTimeout(() => setSaveStatus(null), 2000);
+    }, 1000);
+  };
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({ description: "Link copied to clipboard!" });
@@ -80,25 +90,22 @@ export default function Player() {
           
           {isPlaying ? (
             <div className="w-full h-full relative">
-              {/* Mock Iframe Area */}
               <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-muted-foreground">
                  <iframe 
                    src={game.url === "about:blank" ? undefined : game.url}
                    className="w-full h-full absolute inset-0 z-10"
                    allow="autoplay; fullscreen; gamepad"
                  />
-                 {/* Fallback visual if it's a blank placeholder */}
                  {game.url === "about:blank" && (
                    <div className="z-0 flex flex-col items-center animate-pulse">
                      <AlertCircle className="w-16 h-16 mb-4 opacity-50" />
-                     <p className="text-2xl font-display font-bold">GAME EMULATION RUNNING</p>
-                     <p className="text-sm opacity-60 mt-2">Connecting to game server...</p>
+                     <p className="text-2xl font-display font-bold">DEMO EMULATION RUNNING</p>
+                     <p className="text-sm opacity-60 mt-2">AI-Enhanced Session Active (OpenAI Pipeline ready)</p>
                    </div>
                  )}
               </div>
             </div>
           ) : (
-            /* Pre-play screen */
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
                <img 
                  src={game.thumbnail} 
@@ -106,6 +113,9 @@ export default function Player() {
                  className="absolute inset-0 w-full h-full object-cover opacity-30 blur-sm"
                />
                <div className="relative z-30 flex flex-col items-center text-center p-8 max-w-2xl animate-in zoom-in duration-300">
+                 <div className="mb-4 px-4 py-1 bg-white/10 border border-white/20 rounded-full text-xs font-bold text-white uppercase tracking-tighter">
+                   Quick Demo Version
+                 </div>
                  <h1 className="text-4xl md:text-6xl font-black text-white mb-2 font-display uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
                    {game.title}
                  </h1>
@@ -118,19 +128,17 @@ export default function Player() {
                    className="h-20 px-16 text-2xl font-bold rounded-full bg-white text-black hover:bg-primary hover:text-white hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] border-4 border-transparent hover:border-white/50"
                  >
                    <Play className="w-8 h-8 mr-4 fill-current" />
-                   START GAME
+                   PLAY DEMO
                  </Button>
                </div>
             </div>
           )}
           
-          {/* Controls Overlay (Always visible on hover or when not playing) */}
           <div className="absolute top-4 right-4 z-40 flex gap-2">
             <Button variant="secondary" size="icon" className="rounded-full bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/10 text-white">
               <Maximize2 className="w-5 h-5" />
             </Button>
           </div>
-
         </div>
 
         {/* Bottom Bar */}
@@ -144,19 +152,18 @@ export default function Player() {
                <h2 className="font-bold text-lg md:text-xl text-white leading-tight">{game.title}</h2>
                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                  <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/20">{game.category[0]}</span>
-                 <span>by {game.creator}</span>
+                 <span>Demo Mode</span>
                </div>
              </div>
           </div>
 
           <div className="flex items-center gap-2 md:gap-6 w-full md:w-auto justify-between md:justify-end">
             
-            {/* Rating Actions */}
             <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-full border border-white/5">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-green-500/20 hover:text-green-500 transition-colors h-10 w-10">
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-green-500/20 hover:text-green-500 h-10 w-10">
                       <ThumbsUp className="w-5 h-5" />
                     </Button>
                   </TooltipTrigger>
@@ -169,7 +176,7 @@ export default function Player() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-500/20 hover:text-red-500 transition-colors h-10 w-10">
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-500/20 hover:text-red-500 h-10 w-10">
                       <ThumbsDown className="w-5 h-5" />
                     </Button>
                   </TooltipTrigger>
@@ -180,27 +187,31 @@ export default function Player() {
 
             <div className="h-8 w-px bg-white/10 hidden md:block" />
 
-            {/* Main Actions */}
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="secondary" size="icon" onClick={handleToggleSave} className={`rounded-full transition-all ${isSaved ? 'bg-primary text-white hover:bg-primary/80' : 'bg-muted hover:bg-muted/80'}`}>
-                      <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+                    <Button 
+                      variant="secondary" 
+                      onClick={handleManualSave}
+                      className="rounded-full bg-muted hover:bg-muted/80 flex items-center gap-2 px-4"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span className="text-xs font-bold">{saveStatus || "Save Progress"}</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent><p>{isSaved ? 'Remove from Library' : 'Save to Library'}</p></TooltipContent>
+                  <TooltipContent><p>Save your demo progress</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
 
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="secondary" size="icon" onClick={() => setIsPlaying(false)} className="rounded-full bg-muted hover:bg-muted/80">
-                      <RotateCcw className="w-5 h-5" />
+                    <Button variant="secondary" size="icon" onClick={handleToggleSave} className={`rounded-full ${isSaved ? 'bg-primary text-white' : 'bg-muted'}`}>
+                      <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent><p>Restart</p></TooltipContent>
+                  <TooltipContent><p>Add to Wishlist</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
 
@@ -216,8 +227,8 @@ export default function Player() {
               </TooltipProvider>
             </div>
 
-            <Button onClick={handleNext} size="lg" className="ml-4 rounded-full bg-white text-black hover:bg-primary hover:text-white border border-transparent hover:border-white/50 shadow-lg shadow-white/5 hover:shadow-primary/20 transition-all font-bold gap-2 pl-6 pr-4">
-              NEXT GAME
+            <Button onClick={handleNext} size="lg" className="ml-4 rounded-full bg-white text-black hover:bg-primary hover:text-white border border-transparent hover:border-white/50 shadow-lg font-bold gap-2 pl-6 pr-4">
+              NEXT DEMO
               <SkipForward className="w-5 h-5 fill-current" />
             </Button>
           </div>

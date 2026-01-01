@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Player from "@/pages/player";
 import Library from "@/pages/library";
 import Submit from "@/pages/submit";
+import Recommend from "@/pages/recommend";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/play/:id" component={Player} />
       <Route path="/library" component={Library} />
       <Route path="/submit" component={Submit} />
+      <Route path="/recommend" component={Recommend} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -32,4 +34,6 @@ function App() {
   );
 }
 
-export default App;
+export default function WrappedApp() {
+  return <App />;
+}
