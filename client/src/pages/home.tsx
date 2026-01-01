@@ -74,7 +74,7 @@ export default function Home() {
             DISCOVER THE NEXT BIG HIT
           </div>
           <div className="w-full flex flex-col items-center">
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white font-display uppercase leading-none animate-in zoom-in duration-700 w-full text-center">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white font-display uppercase leading-tight w-full text-center px-4">
               Arcade<span className="text-primary">Roulette</span>
             </h1>
           </div>
