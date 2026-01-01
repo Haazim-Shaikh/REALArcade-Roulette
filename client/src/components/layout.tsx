@@ -10,16 +10,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
 
   const handleGithubConnect = () => {
-    setIsConnected(true);
+    setIsConnected(!isConnected);
     toast({
-      title: "Connected to GitHub",
-      description: "You can now sync your repositories in the Creator Portal.",
-      className: "bg-[#24292e] text-white border-none"
+      title: isConnected ? "GitHub Disconnected" : "Connected to GitHub",
+      description: isConnected ? "Your account has been unlinked." : "You can now sync your repositories in the Creator Portal.",
+      className: isConnected ? "" : "bg-[#24292e] text-white border-none"
     });
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background text-foreground relative flex flex-col font-sans selection:bg-primary selection:text-primary-foreground overflow-x-hidden">
       {/* Scanline effect overlay */}
       <div className="scanline" />
 
@@ -61,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className={`hidden sm:flex items-center gap-2 transition-all ${!isConnected ? 'border-primary/50 text-primary hover:bg-primary hover:text-white' : 'bg-green-500/10 text-green-500 border-green-500/20'}`}
             >
               <Github className="w-4 h-4" />
-              {isConnected ? "GitHub Connected" : "Connect GitHub"}
+              {isConnected ? "Connected" : "Connect GitHub"}
             </Button>
              <Button variant="ghost" size="icon" className="sm:hidden text-muted-foreground">
               <User className="w-5 h-5" />
@@ -70,8 +70,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 pt-16 relative z-10">
+      {/* Main Content - Scrollable area */}
+      <main className="flex-1 pt-16 relative z-10 overflow-y-auto">
         {children}
       </main>
 
