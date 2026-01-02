@@ -102,7 +102,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-white/5 bg-black/40 py-8 mt-auto relative z-10">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
           <p className="font-display mb-2">BUILT FOR GAMERS & CREATORS</p>
-          <p>© 2024 ArcadeRoulette. Powered by AI Demos.</p>
+          <p>© 2026 ArcadeRoulette.</p>
         </div>
       </footer>
     </div>
